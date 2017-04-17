@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RestClient {
+public class TransactionHandler {
 
 	private AtomicBoolean i_isDone = new AtomicBoolean();
 	private List<Future<Double>> i_transactionPagelist = Collections
@@ -21,8 +21,8 @@ public class RestClient {
 	private static final String BASE_ENDPOINT = "http://resttest.bench.co/transactions/";
 
 	// Runnable thread for checking status of executing threads.
-	Runnable checkResponseCodeTask = () -> {
-		
+	private Runnable checkResponseCodeTask = () -> {
+
 		// Check if any of the futures has returned -1.
 		// -1 represents HTTP GET request failure from TransactionParser.
 		while (!i_isDone.get()) {
@@ -31,10 +31,12 @@ public class RestClient {
 						.hasNext();) {
 					Future<Double> future = iterator.next();
 					if (future.isDone()) {
+						// TODO: future is skipped when done. Purpose?
 						try {
 							if (future.get() == Double.NEGATIVE_INFINITY) {
 								this.i_isDone.set(true);
 							} else {
+								// TODO:
 								iterator.remove();
 							}
 						} catch (InterruptedException | ExecutionException e) {
@@ -44,33 +46,32 @@ public class RestClient {
 					}
 				}
 			}
-
 		}
-	};	
+	};
 
 	private void retrieveTransactions() {
-		
+
 		ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
 		int page = 1;
 		while (!i_isDone.get()) {
-			Callable<Double> worker = new TransactionParser(
+			Callable<Double> worker = new TransactionClient(
 					BASE_ENDPOINT + String.valueOf(page++) + ".json", "");
 			Future<Double> submit = executor.submit(worker);
 			i_transactionPagelist.add(submit);
 
 			Thread checkResponses = new Thread(checkResponseCodeTask);
 			checkResponses.start();
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			// try {
+			// Thread.sleep(10);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 		try {
 			executor.shutdown();
 			executor.awaitTermination(5, TimeUnit.SECONDS);
-			TransactionCache.getTransactionsInfo().printRemaining();
+			TransactionCache.getInstance().printRemaining();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
@@ -80,10 +81,10 @@ public class RestClient {
 			executor.shutdownNow();
 		}
 	}
-	
+
 	public static void main(String[] args) {
-		
-		RestClient client = new RestClient();
+
+		TransactionHandler client = new TransactionHandler();
 		client.retrieveTransactions();
 	}
 }
