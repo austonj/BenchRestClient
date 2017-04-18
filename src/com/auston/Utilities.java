@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class Utilities {
 
-	public static Date convertToDate(String date) {
+	public static Date parseStringAsDate(String date) {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			return df.parse(date);
@@ -20,6 +20,13 @@ public class Utilities {
 		return null;
 	}
 
+	/**
+	 * Consume an InputStream until completion. Return the full response.
+	 *
+	 * @param input The InputStream to consume.
+	 * @return Full response from the InputStream.
+	 * @throws IOException
+	 */
 	public static String readInputStream(InputStream input) throws IOException {
 		String inputLine;
 		BufferedReader in = new BufferedReader(new InputStreamReader(input));

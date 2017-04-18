@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class TransactionRequest {
+
 	public enum HttpOperation {
 		GET, HEAD, POST, PUT
 	}
@@ -35,6 +36,11 @@ public class TransactionRequest {
 		return -1;
 	}
 
+	/**
+	 * HTTP GET request.
+	 *
+	 * @return HTTP return code.
+	 */
 	protected short GET() {
 		try {
 			// Send HTTP GET request.

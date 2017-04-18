@@ -18,7 +18,7 @@ public class TransactionsTest extends Transaction {
 	@Test
 	public void testUpdateBalanceByDate() {
 		Transaction.clearTransactionByDateCache();
-		Transaction i_transaction = new Transaction(Utilities.convertToDate("2010-10-10"), 100);
+		Transaction i_transaction = new Transaction(Utilities.parseStringAsDate("2010-10-10"), 100);
 		assert(Transaction.getTransactionByDateCache().get(i_transaction.getDate()).getAmount() == 100.0);
 	}
 
@@ -26,14 +26,14 @@ public class TransactionsTest extends Transaction {
 	public void sortAscensindgTest() {
 		Transaction.clearTransactionByDateCache();
 		List<Transaction> transactionsList = new ArrayList<Transaction>();
-		transactionsList.add(new Transaction(Utilities.convertToDate("2010-10-10"), 100));
-		transactionsList.add(new Transaction(Utilities.convertToDate("2010-09-10"), 110));
-		transactionsList.add(new Transaction(Utilities.convertToDate("2011-11-10"), 120));
+		transactionsList.add(new Transaction(Utilities.parseStringAsDate("2010-10-10"), 100));
+		transactionsList.add(new Transaction(Utilities.parseStringAsDate("2010-09-10"), 110));
+		transactionsList.add(new Transaction(Utilities.parseStringAsDate("2011-11-10"), 120));
 
 		List<Date> verificationDateList = new ArrayList<Date>();
-		Date date1 = Utilities.convertToDate("2010-09-10");
-		Date date2 = Utilities.convertToDate("2010-10-10");
-		Date date3 = Utilities.convertToDate("2011-11-10");
+		Date date1 = Utilities.parseStringAsDate("2010-09-10");
+		Date date2 = Utilities.parseStringAsDate("2010-10-10");
+		Date date3 = Utilities.parseStringAsDate("2011-11-10");
 		verificationDateList.add(date1);
 		verificationDateList.add(date2);
 		verificationDateList.add(date3);
@@ -50,14 +50,14 @@ public class TransactionsTest extends Transaction {
 	public void sortDescensindgTest() {
 		Transaction.clearTransactionByDateCache();
 		List<Transaction> transactionsList = new ArrayList<Transaction>();
-		transactionsList.add(new Transaction(Utilities.convertToDate("2010-10-10"), 100));
-		transactionsList.add(new Transaction(Utilities.convertToDate("2010-09-10"), 110));
-		transactionsList.add(new Transaction(Utilities.convertToDate("2011-11-10"), 120));
+		transactionsList.add(new Transaction(Utilities.parseStringAsDate("2010-10-10"), 100));
+		transactionsList.add(new Transaction(Utilities.parseStringAsDate("2010-09-10"), 110));
+		transactionsList.add(new Transaction(Utilities.parseStringAsDate("2011-11-10"), 120));
 
 		List<Date> verificationDateList = new ArrayList<Date>();
-		Date date1 = Utilities.convertToDate("2011-11-10");
-		Date date2 = Utilities.convertToDate("2010-10-10");
-		Date date3 = Utilities.convertToDate("2010-09-10");
+		Date date1 = Utilities.parseStringAsDate("2011-11-10");
+		Date date2 = Utilities.parseStringAsDate("2010-10-10");
+		Date date3 = Utilities.parseStringAsDate("2010-09-10");
 
 		verificationDateList.add(date1);
 		verificationDateList.add(date2);

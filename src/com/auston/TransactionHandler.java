@@ -19,6 +19,13 @@ public class TransactionHandler {
 		;
 	}
 
+	/**
+	 * Create Transaction object(s) based on the passed in "response" parameter.
+	 * The number of Transaction objects created will depend on the "response" parameter.
+	 *
+	 * @param response The JSON response.
+	 * @return A list of Transaction objects.
+	 */
 	protected List<Transaction> createTransactionsFromJSON(String response) {
 
 		JSONParser parser = new JSONParser();
@@ -38,7 +45,7 @@ public class TransactionHandler {
 				if (currTransaction.containsKey("Amount") && currTransaction.containsKey("Date")) {
 					amount = Double.parseDouble((String) currTransaction.get("Amount"));
 					dateStr = (String) currTransaction.get("Date");
-					Date date = Utilities.convertToDate(dateStr);
+					Date date = Utilities.parseStringAsDate(dateStr);
 					transactionList.add(new Transaction(date, amount));
 				} else {
 					System.out.println("Invalid transaction JSON object. Missing attribute(s)");
@@ -50,6 +57,11 @@ public class TransactionHandler {
 		return transactionList;
 	}
 
+	/**
+	 * Helper method for issuing HTTP GET requests to retrieve JSON response
+	 * containing transaction information. This method will retry once for
+	 * HTTP return code which is neither 200 or 404.
+	 */
 	private void handleTransactions() {
 
 		boolean isDone = false;

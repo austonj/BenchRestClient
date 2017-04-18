@@ -13,6 +13,10 @@ public class Transaction {
 	private Date i_date;
 	private double i_amount;
 	private static double s_totalBalance;
+
+	/**
+	 * Cache for holding the date to it's total transaction amount.
+	 */
 	private static LinkedHashMap<Date, Transaction> s_transactionByDateCache =
 			new LinkedHashMap<Date, Transaction>();
 
@@ -69,6 +73,11 @@ public class Transaction {
 		s_totalBalance = 0;
 	}
 
+	/**
+	 * Update s_transactionByDateCache with the this Transaction object's amount.
+	 * If no entry exists with the this Transaction object's date, add a new entry.
+	 * If an entry already exists, update the corresponding amount value.
+	 */
 	protected void updateTransactionByDateCache() {
 
 		// Update total balance.
@@ -85,6 +94,13 @@ public class Transaction {
 		}
 	}
 
+	/**
+	 * Sort s_transactionByDateCache based in either ascending, or descending order.
+	 * The Comparator (in lambda format) compares s_transactionByDateCache's keys, which is of type Date.
+	 *
+	 * @param ascending True: Ascending order.
+	 * 					False: Descending order.
+	 */
 	protected static void sortByDate(boolean ascending) {
 		synchronized (s_transactionByDateCache) {
 			List<Map.Entry<Date, Transaction>> entries = new ArrayList<Map.Entry<Date, Transaction>>(

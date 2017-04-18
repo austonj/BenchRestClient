@@ -33,8 +33,8 @@ public class TransactionHandlerTest extends TransactionHandler {
 	public void testCreateTransactionSuccess() {
 		List<Date> verificationDateList = new ArrayList<Date>();
 		List<Double> verificationAmountList = new ArrayList<Double>();
-		Date date1 = Utilities.convertToDate("2013-12-12");
-		Date date2 = Utilities.convertToDate("2013-12-15");
+		Date date1 = Utilities.parseStringAsDate("2013-12-12");
+		Date date2 = Utilities.parseStringAsDate("2013-12-15");
 		double amount1 = -117.81;
 		double amount2 = -520.85;
 
