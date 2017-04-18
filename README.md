@@ -75,10 +75,10 @@ made the cache idea possible would be to:*
 *1. Scan how may JSON response pages there are.*
 *2. Parse the response in reverse: From the bottom of the last response page, to the
 top of the first response page.*
-*This way both parsing and daily balance flows in an ascending order. Considering the
-size of the data and the complexity of the assignment, I didn't feel I had enough
-justification to implement this idea. I did think about the detail implementations
-of this cache though, feel free to ask me if you're interested.*
+*This way both transaction parsing and aggregating the daily balance flows in ascending order. 
+However, considering the size of the data and the complexity of the assignment, 
+I didn't feel I had enough justification to implement this idea. I did think about the 
+detail implementations of this cache though, feel free to ask me if you're interested.*
 
 --------------------------------------------------------------------------------------
 ## Limitations
