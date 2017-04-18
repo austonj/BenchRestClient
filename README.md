@@ -54,7 +54,7 @@ was the other option I considered. It did contain more built in methods, but non
 which were concern to me. It didn't justify me including `HttpClient` as a dependency.*
 
 --------------------------------------------------------------------------------------
-## Attempts
+## Other considerations
 ### Multithreading
 I considered the possibility of large number of transactions broken into thousands
 JSON pages, a bottleneck could occur at the network level. I wanted to implement the
