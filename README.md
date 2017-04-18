@@ -36,7 +36,7 @@ used to keep track of the daily balance and the total balance. *Another option
 could of been for other classes to keep track of all the transaction objects.
 I didn't go that route because I felt it added more unnecessary code and complexity.
 All parsed transaction need to be updated to the daily and total balance, therefore 
-it made sense for the Transaction object to maintain this information.*
+it made sense for the Transaction class to maintain this information.*
 - `s_transactionByDateCache` uses a LinkedHashMap because ordering is required, and
 O(1) access is required. TreeMap doesn't work because it provides O(logN) access.
 HashMap doesn't work because sorting is not possible.
