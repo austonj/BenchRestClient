@@ -77,8 +77,10 @@ made the cache idea possible would be to:*
 top of the first response page.*
 *This way both transaction parsing and aggregating the daily balance flows in ascending order. 
 However, considering the size of the data and the complexity of the assignment, 
-I didn't feel I had enough justification to implement this idea. I did think about the 
-detail implementations of this cache though, feel free to ask me if you're interested.*
+I didn't feel there was enough justification to implement this idea. It would of also had a 
+slower runtime since the app would first need to find out how many pages there are, 
+and for each page scan from the bottom up. I did think about the detail implementations 
+of this cache though, feel free to ask me if you're interested.*
 
 --------------------------------------------------------------------------------------
 ## Limitations
