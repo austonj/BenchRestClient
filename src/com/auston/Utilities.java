@@ -1,13 +1,12 @@
 package com.auston;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class Utilities {
 
@@ -16,35 +15,20 @@ public class Utilities {
 		try {
 			return df.parse(date);
 		} catch (java.text.ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public static void parseTransactionsJSON(String response) {
-		JSONParser parser = new JSONParser();
+	public static String readInputStream(InputStream input) throws IOException {
+		String inputLine;
+		BufferedReader in = new BufferedReader(new InputStreamReader(input));
+		StringBuffer response = new StringBuffer();
 
-		try {
-			// Parse HTTP response into JSON objects.
-			JSONObject jsonObject = (JSONObject) parser.parse(response);
-			// Obtain list of transactions for the current page.
-			JSONArray transactions = (JSONArray) jsonObject.get("transactions");
-
-			// Loop through the list of transaction.
-			double amount = 0.0;
-			String dateStr = null;
-			for (int i = 0; i < transactions.size(); i++) {
-				JSONObject currTransaction = (JSONObject) transactions.get(i);
-				amount = Double.parseDouble((String) currTransaction.get("Amount"));
-				dateStr = (String) currTransaction.get("Date");
-				Date date = Utilities.convertToDate(dateStr);
-
-				// Add current transaction to TransactionCache.cache.
-				TransactionCache.getInstance().put(date, amount);
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
 		}
+		in.close();
+		return response.toString();
 	}
 }

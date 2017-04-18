@@ -1,90 +1,85 @@
 package com.auston;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.auston.TransactionRequest.HttpOperation;
 
 public class TransactionHandler {
 
-	private AtomicBoolean i_isDone = new AtomicBoolean();
-	private List<Future<Double>> i_transactionPagelist = Collections
-			.synchronizedList(new ArrayList<Future<Double>>());
-	private static final int NTHREDS = 10;
 	private static final String BASE_ENDPOINT = "http://resttest.bench.co/transactions/";
 
-	// Runnable thread for checking status of executing threads.
-	private Runnable checkResponseCodeTask = () -> {
+	public TransactionHandler() {
+		;
+	}
 
-		// Check if any of the futures has returned -1.
-		// -1 represents HTTP GET request failure from TransactionParser.
-		while (!i_isDone.get()) {
-			synchronized (i_transactionPagelist) {
-				for (Iterator<Future<Double>> iterator = i_transactionPagelist.iterator(); iterator
-						.hasNext();) {
-					Future<Double> future = iterator.next();
-					if (future.isDone()) {
-						// TODO: future is skipped when done. Purpose?
-						try {
-							if (future.get() == Double.NEGATIVE_INFINITY) {
-								this.i_isDone.set(true);
-							} else {
-								// TODO:
-								iterator.remove();
-							}
-						} catch (InterruptedException | ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+	protected List<Transaction> createTransactionsFromJSON(String response) {
+
+		JSONParser parser = new JSONParser();
+		List<Transaction> transactionList = new ArrayList<Transaction>();
+
+		try {
+			// Parse HTTP response into JSON objects.
+			JSONObject jsonObject = (JSONObject) parser.parse(response);
+			// Obtain list of transactions for the current page.
+			JSONArray transactions = (JSONArray) jsonObject.get("transactions");
+
+			// Loop through the list of transaction.
+			double amount = 0.0;
+			String dateStr = null;
+			for (int i = 0; i < transactions.size(); i++) {
+				JSONObject currTransaction = (JSONObject) transactions.get(i);
+				if (currTransaction.containsKey("Amount") && currTransaction.containsKey("Date")) {
+					amount = Double.parseDouble((String) currTransaction.get("Amount"));
+					dateStr = (String) currTransaction.get("Date");
+					Date date = Utilities.convertToDate(dateStr);
+					transactionList.add(new Transaction(date, amount));
+				} else {
+					System.out.println("Invalid transaction JSON object. Missing attribute(s)");
 				}
 			}
-		}
-	};
-
-	private void retrieveTransactions() {
-
-		ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
-		int page = 1;
-		while (!i_isDone.get()) {
-			Callable<Double> worker = new TransactionClient(
-					BASE_ENDPOINT + String.valueOf(page++) + ".json", "");
-			Future<Double> submit = executor.submit(worker);
-			i_transactionPagelist.add(submit);
-
-			Thread checkResponses = new Thread(checkResponseCodeTask);
-			checkResponses.start();
-			// try {
-			// Thread.sleep(10);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-		}
-		try {
-			executor.shutdown();
-			executor.awaitTermination(5, TimeUnit.SECONDS);
-			TransactionCache.getInstance().printRemaining();
-		} catch (InterruptedException e) {
+		} catch (ParseException e) {
 			e.printStackTrace();
-		} finally {
-			if (!executor.isTerminated()) {
-				System.err.println("Cancelling all executing thread");
+		}
+		return transactionList;
+	}
+
+	private void handleTransactions() {
+
+		boolean isDone = false;
+		boolean hasRetried = false;
+		int returnCode;
+		int page = 1;
+
+		while (!isDone) {
+			TransactionRequest request = new TransactionRequest(
+					BASE_ENDPOINT + String.valueOf(page++) + ".json", "");
+			returnCode = request.executeRequest(HttpOperation.GET);
+			if (returnCode == 200) {
+				createTransactionsFromJSON(request.getResponse());
+			} else if (returnCode == 404) {
+				isDone = true;
+			} else {
+				if (!hasRetried) {
+					hasRetried = true;
+					returnCode = request.executeRequest(HttpOperation.GET);
+				} else {
+					isDone = true;
+				}
 			}
-			executor.shutdownNow();
 		}
 	}
 
 	public static void main(String[] args) {
-
-		TransactionHandler client = new TransactionHandler();
-		client.retrieveTransactions();
+		TransactionHandler handler = new TransactionHandler();
+		handler.handleTransactions();
+		Transaction.printDailyBalances();
+		Transaction.printTotalBalance();
 	}
 }
