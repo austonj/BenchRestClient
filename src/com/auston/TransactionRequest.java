@@ -33,6 +33,7 @@ public class TransactionRequest {
 		if (op == HttpOperation.PUT) {
 			// TODO: Implement.
 		}
+		System.out.println("Unsupported HTTP operation");
 		return -1;
 	}
 

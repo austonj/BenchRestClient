@@ -39,13 +39,12 @@ public class Transaction {
 	}
 
 	public static void printDailyBalances() {
+
 		double dailyBalance = 0;
 		sortByDate(true);
-		synchronized (s_transactionByDateCache) {
-			for (Entry<Date, Transaction> entry : s_transactionByDateCache.entrySet()) {
-				dailyBalance += entry.getValue().getAmount();
-				System.out.println(entry.getKey() + ": " + new DecimalFormat("##.00").format(dailyBalance));
-			}
+		for (Entry<Date, Transaction> entry : s_transactionByDateCache.entrySet()) {
+			dailyBalance += entry.getValue().getAmount();
+			System.out.println(entry.getKey() + ": " + new DecimalFormat("##.00").format(dailyBalance));
 		}
 	}
 
@@ -74,6 +73,31 @@ public class Transaction {
 	}
 
 	/**
+	 * Sort s_transactionByDateCache based in either ascending, or descending order.
+	 * The Comparator (in lambda format) compares s_transactionByDateCache's keys, which is of type Date.
+	 *
+	 * @param ascending True: Ascending order.
+	 * 					False: Descending order.
+	 */
+	protected static void sortByDate(boolean ascending) {
+
+		List<Map.Entry<Date, Transaction>> entries = new ArrayList<Map.Entry<Date, Transaction>>(
+				s_transactionByDateCache.entrySet());
+
+		if (ascending) {
+			Collections.sort(entries,
+					(Entry<Date, Transaction> a, Entry<Date, Transaction> b) -> a.getKey().compareTo(b.getKey()));
+		} else {
+			Collections.sort(entries, Collections.reverseOrder(
+					(Entry<Date, Transaction> a, Entry<Date, Transaction> b) -> a.getKey().compareTo(b.getKey())));
+		}
+		s_transactionByDateCache.clear();
+		for (Map.Entry<Date, Transaction> e : entries) {
+			s_transactionByDateCache.put(e.getKey(), e.getValue());
+		}
+	}
+
+	/**
 	 * Update s_transactionByDateCache with the this Transaction object's amount.
 	 * If no entry exists with the this Transaction object's date, add a new entry.
 	 * If an entry already exists, update the corresponding amount value.
@@ -86,37 +110,9 @@ public class Transaction {
 		// If no entry exists for transaction.getDate(), add a new entry to the map.
 		// If an entry already exists, update it's amount with the current transaction object's amount.
 		Date date = this.getDate();
-		synchronized (s_transactionByDateCache) {
-			if (s_transactionByDateCache.putIfAbsent(date, this) != null) {
-				double existingAmount = s_transactionByDateCache.get(date).getAmount();
-				s_transactionByDateCache.get(date).setAmount(existingAmount + i_amount);
-			}
-		}
-	}
-
-	/**
-	 * Sort s_transactionByDateCache based in either ascending, or descending order.
-	 * The Comparator (in lambda format) compares s_transactionByDateCache's keys, which is of type Date.
-	 *
-	 * @param ascending True: Ascending order.
-	 * 					False: Descending order.
-	 */
-	protected static void sortByDate(boolean ascending) {
-		synchronized (s_transactionByDateCache) {
-			List<Map.Entry<Date, Transaction>> entries = new ArrayList<Map.Entry<Date, Transaction>>(
-					s_transactionByDateCache.entrySet());
-
-			if (ascending) {
-				Collections.sort(entries,
-						(Entry<Date, Transaction> a, Entry<Date, Transaction> b) -> a.getKey().compareTo(b.getKey()));
-			} else {
-				Collections.sort(entries, Collections.reverseOrder(
-						(Entry<Date, Transaction> a, Entry<Date, Transaction> b) -> a.getKey().compareTo(b.getKey())));
-			}
-			s_transactionByDateCache.clear();
-			for (Map.Entry<Date, Transaction> e : entries) {
-				s_transactionByDateCache.put(e.getKey(), e.getValue());
-			}
+		if (s_transactionByDateCache.putIfAbsent(date, this) != null) {
+			double existingAmount = s_transactionByDateCache.get(date).getAmount();
+			s_transactionByDateCache.get(date).setAmount(existingAmount + i_amount);
 		}
 	}
 }

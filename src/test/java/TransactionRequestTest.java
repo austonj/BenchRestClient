@@ -7,7 +7,7 @@ import com.auston.TransactionRequest;
 public class TransactionRequestTest extends TransactionRequest {
 
 	public TransactionRequestTest() {
-		super("http://resttest.bench.co/transactions/1.json", "");
+		super("Placeholder", "");
 	}
 
 	@Override
@@ -16,7 +16,16 @@ public class TransactionRequestTest extends TransactionRequest {
 	}
 
 	@Test
-	public void testGET() {
-		assert(GET() == 200);
+	public void testGETSuccess() {
+		TransactionRequest request =
+				new TransactionRequest("http://resttest.bench.co/transactions/1.json", "");
+		assert(request.executeRequest(HttpOperation.GET) == 200);
+	}
+
+	@Test
+	public void testGETFailure() {
+		TransactionRequest request =
+				new TransactionRequest("Invalid request", "");
+		assert(request.executeRequest(HttpOperation.GET) != 200);
 	}
 }
