@@ -13,6 +13,7 @@ Maven
 1. Pull the GitHub project.
 2. On your system's terminal, navigate to the directory containing "pom.xml".
 3. Issue "mvn package" to build the jar.
+4. Navigate to the "target" folder with "cd target".
 4. Issue "java -jar BenchRestClient-1.0.0.jar".
 
 ### Running JUnit tests:
