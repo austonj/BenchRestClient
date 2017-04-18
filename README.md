@@ -61,7 +61,7 @@ application in a way to allow for multithreading, with each thread being respons
 for parsing a single HTTP request and response. I implemented this with Java Future
 and Callable framework. However, I encountered synchronization issues. I was receiving
 in consistent run results. After an hour of debugging, I decided the effort was not 
-worth the performance gain. The code attempt can be seen on the _"supportThreads"_ branch.
+worth the performance gain. The code attempt can be seen on the _supportThreads_ branch.
 ### Transaction cache
 I considered that in the case of large number of transactions, it's not wise to hold 
 everything in memory. A cyclical cache of a size determined at run time (scale based on 
@@ -69,7 +69,7 @@ the number of system core for example) made sense. However, transaction records 
 parsed in date descending, while daily balance is accumulated in date ascending. This
 means reference to the first parsed record will need to be kept until the last
 transaction was parsed. This would of defeated the justification for a cache. The
-code attempt can be seen on the _"supportThreads"_ branch. *An option which would of 
+code attempt can be seen on the _supportThreads_ branch. *An option which would of 
 made the cache idea possible would be to:*
 *1. Scan how may JSON response pages there are.*
 *2. Parse the response in reverse: From the bottom of the last response page, to the
