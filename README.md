@@ -94,7 +94,7 @@ of this cache though, feel free to ask me if you're interested.*
 - Final single threaded design implementation: ~1H
 - JUnit testing: ~1H
 - pom.xml ~0.5H
-- Documentation: ~1H
+- Documentation & comments: ~1H
 - Git was not being friendly...: ~0.5H
 
 Total: ~8.5H
